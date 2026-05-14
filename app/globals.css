@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-baloo: 'Baloo 2', sans-serif;
+  --font-nunito: 'Nunito', sans-serif;
+
+  /* ADHD palette */
+  --sky-soft: #BFE3F5;
+  --sky: #7DC4E8;
+  --sky-deep: #3A9FD4;
+  --sky-text: #1A5F7A;
+  --mint-soft: #B8EDD9;
+  --mint: #5CC7A0;
+  --mint-deep: #3AAB82;
+  --mint-text: #0F5C3A;
+  --cream: #F8F6F0;
+  --warm: #FFF3E0;
+  --lavender-soft: #E8E0F8;
+  --lavender: #B8A8F0;
+  --lavender-deep: #8E72DB;
+  --lavender-text: #3D1F8A;
+  --star: #FFD93D;
+  --star-deep: #FF922B;
+  --text-dark: #1E2A38;
+  --text-mid: #4A5568;
+  --text-soft: #7A8BA0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-nunito);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* No focus outline flash — use custom ring */
+:focus-visible {
+  outline: 3px solid var(--mint-deep);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Scrollbar subtle */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 99px; }
+
+/* Utility: font-display */
+.font-display { font-family: var(--font-baloo); }
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-sm
+           transition-all duration-150 active:scale-95 cursor-pointer border-0;
+  }
+
+  .btn-mint {
+    background: linear-gradient(135deg, var(--mint-deep), var(--sky-deep));
+    @apply text-white shadow-md;
+    box-shadow: 0 4px 14px rgba(92,199,160,0.35);
+  }
+
+  .btn-mint:hover {
+    box-shadow: 0 6px 20px rgba(92,199,160,0.5);
+    @apply -translate-y-0.5;
+  }
+
+  .btn-lavender {
+    background: linear-gradient(135deg, var(--lavender-deep), #5B8EDB);
+    @apply text-white;
+    box-shadow: 0 4px 14px rgba(142,114,219,0.35);
+  }
+
+  .btn-lavender:hover {
+    box-shadow: 0 6px 20px rgba(142,114,219,0.5);
+    @apply -translate-y-0.5;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border border-gray-200 text-gray-500 hover:bg-gray-50;
+  }
+}
+
+/* ── Print : n'afficher que la feuille de routine ── */
+#routine-print-sheet {
+  display: none;
+}
+
+@media print {
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Cacher tout le corps — visibility peut être surchargé par les enfants, display:none non */
+  body {
+    visibility: hidden !important;
+  }
+
+  #routine-print-sheet {
+    visibility: visible !important;
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    background: white !important;
+    padding: 24px 28px !important;
+    font-family: 'Nunito', sans-serif !important;
+  }
+
+  #routine-print-sheet * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+@layer components {
+
+  .card {
+    @apply bg-white rounded-3xl border border-gray-100 shadow-sm;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full;
+  }
+}
