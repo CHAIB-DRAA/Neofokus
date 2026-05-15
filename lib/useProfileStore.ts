@@ -6,13 +6,15 @@ export interface Profile {
   name: string;
   avatar: string;
   color: string;
+  age: number | null; // age in years, set by parent
   createdAt: string;
 }
 
 interface ProfileStore {
   profiles: Profile[];
   currentProfileId: string | null;
-  createProfile: (name: string, avatar: string, color: string) => string;
+  createProfile: (name: string, avatar: string, color: string, age: number | null) => string;
+  updateProfile: (id: string, updates: Partial<Pick<Profile, "age" | "name" | "avatar" | "color">>) => void;
   deleteProfile: (id: string) => void;
   setCurrentProfile: (id: string | null) => void;
 }
@@ -27,13 +29,14 @@ export const useProfileStore = create<ProfileStore>()(
       profiles: [],
       currentProfileId: null,
 
-      createProfile: (name, avatar, color) => {
+      createProfile: (name, avatar, color, age) => {
         const id = genId();
         const profile: Profile = {
           id,
           name,
           avatar,
           color,
+          age,
           createdAt: new Date().toISOString(),
         };
         set((s) => ({
@@ -41,6 +44,14 @@ export const useProfileStore = create<ProfileStore>()(
           currentProfileId: s.currentProfileId ?? id,
         }));
         return id;
+      },
+
+      updateProfile: (id, updates) => {
+        set((s) => ({
+          profiles: s.profiles.map((p) =>
+            p.id === id ? { ...p, ...updates } : p
+          ),
+        }));
       },
 
       deleteProfile: (id) => {
