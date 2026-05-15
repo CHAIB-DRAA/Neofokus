@@ -213,8 +213,8 @@ export default function ExplorateurPage() {
             style={{ background: "linear-gradient(135deg, #FFF9C4, #FFE0B2)" }}>
             <span className="text-2xl">🦸</span>
             <div className="flex-1">
-              <div className="font-display text-sm font-extrabold text-[#9C6800]">Mes Super-Pouvoirs TDAH</div>
-              <div className="text-xs text-[#7A4200] font-semibold">Découvre ce que ton cerveau a de spécial ✨</div>
+              <div className="font-display text-sm font-extrabold text-[#9C6800]">{t("superTitle")}</div>
+              <div className="text-xs text-[#7A4200] font-semibold">{t("superDesc")}</div>
             </div>
             <span className="text-[#FFD93D] text-lg">→</span>
           </div>

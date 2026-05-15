@@ -37,6 +37,21 @@
     "saveAgeHint": "Explorer games will adapt automatically",
     "whatAge": "How old is {name}?"
   },
+  "starsBar": {
+    "title": "Stars this week",
+    "noBadges": "Play to earn badges!",
+    "weekDone": "🎉 Weekly goal reached — you're incredible!"
+  },
+  "thermostat": {
+    "title": "🌡️ How are you feeling right now?",
+    "subtitle": "Choose, the app helps you find the right activity.",
+    "recommended": "Recommended activities",
+    "calme":     { "label": "Calm",        "message": "Your brain is at its best! It's the ideal time for cognitive challenges.", "science": "A calm state activates the prefrontal cortex — your concentration center." },
+    "energique": { "label": "Energetic",   "message": "Great energy! Direct it first with a movement game, then move on to challenges.", "science": "Physical exercise releases dopamine and improves concentration for 30 min." },
+    "stresse":   { "label": "Overwhelmed", "message": "Your brain is overloaded. Start by breathing — you'll manage better after.", "science": "Slow breathing activates the vagus nerve and reduces cortisol in 90 seconds." },
+    "triste":    { "label": "Sad",         "message": "It's normal to feel that way. Take care of yourself — a gentle activity will help.", "science": "Creative expression helps process difficult emotions and name them." },
+    "agite":     { "label": "Restless",    "message": "Too much energy inside! Move to release it, then your brain will be freer.", "science": "ADHD restlessness is often a sign of dopamine under-stimulation — movement helps." }
+  },
   "explorer": {
     "heroTitle": "Explorer Space 🚀",
     "heroGames": "{count} games adapted to your age",
@@ -44,6 +59,8 @@
     "setAge": "Set →",
     "alertNoAge": "⚠️ Age not set",
     "alertNoAgeDesc": "Ask a parent to set your age in your profile to see adapted games.",
+    "superTitle": "My ADHD Superpowers",
+    "superDesc": "Discover what makes your brain special ✨",
     "sections": {
       "inhibition": "🛑 Inhibition & Control",
       "inhibitionDesc": "Learn to pause before acting",

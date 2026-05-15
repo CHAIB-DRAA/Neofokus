@@ -3,8 +3,10 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
-function getWeekLabel(): string {
+function getWeekLabel(locale: string): string {
   const d = new Date();
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
@@ -12,7 +14,7 @@ function getWeekLabel(): string {
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
   const fmt = (dt: Date) =>
-    dt.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+    dt.toLocaleDateString(locale, { day: "numeric", month: "short" });
   return `${fmt(monday)} – ${fmt(sunday)}`;
 }
 
@@ -20,6 +22,8 @@ const MAX_STARS = 50;
 
 export default function StarsBar() {
   const { stars, badges, checkWeekReset } = useQuestStore();
+  const t = useTranslations("starsBar");
+  const locale = useLocale();
 
   useEffect(() => {
     checkWeekReset();
@@ -32,17 +36,15 @@ export default function StarsBar() {
     <div className="bg-white rounded-2xl p-4 border border-gray-100"
       style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
 
-      {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="text-xs font-bold text-[#7A8BA0] uppercase tracking-widest">
-          Étoiles cette semaine
+          {t("title")}
         </div>
         <div className="text-[10px] font-semibold text-[#B0B8C4]">
-          {getWeekLabel()}
+          {getWeekLabel(locale)}
         </div>
       </div>
 
-      {/* Barre */}
       <div className="h-3 bg-gray-100 rounded-full overflow-hidden mb-2.5">
         <motion.div
           className="h-full rounded-full"
@@ -56,7 +58,6 @@ export default function StarsBar() {
         />
       </div>
 
-      {/* Score + badges */}
       <div className="flex items-center justify-between gap-2">
         <span className="font-display text-lg font-extrabold"
           style={{ color: isMax ? "#3A9FD4" : "#FF922B" }}>
@@ -65,7 +66,7 @@ export default function StarsBar() {
 
         {badges.length === 0 ? (
           <span className="text-[10px] font-semibold text-[#B0B8C4] italic">
-            Joue pour gagner des badges !
+            {t("noBadges")}
           </span>
         ) : (
           <div className="flex gap-1.5 flex-wrap justify-end">
@@ -90,7 +91,7 @@ export default function StarsBar() {
           animate={{ opacity: 1, y: 0 }}
           className="mt-2 text-center text-xs font-extrabold text-[#3A9FD4]"
         >
-          🎉 Objectif semaine atteint — tu es incroyable !
+          {t("weekDone")}
         </motion.div>
       )}
     </div>

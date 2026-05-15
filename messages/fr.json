@@ -37,6 +37,21 @@
     "saveAgeHint": "Les jeux de l'explorateur s'adapteront automatiquement",
     "whatAge": "Quel âge a {name} ?"
   },
+  "starsBar": {
+    "title": "Étoiles cette semaine",
+    "noBadges": "Joue pour gagner des badges !",
+    "weekDone": "🎉 Objectif semaine atteint — tu es incroyable !"
+  },
+  "thermostat": {
+    "title": "🌡️ Comment tu te sens maintenant ?",
+    "subtitle": "Choisis, l'app t'aide à trouver la bonne activité.",
+    "recommended": "Activités recommandées",
+    "calme":     { "label": "Calme",     "message": "Ton cerveau est en pleine forme ! C'est le moment idéal pour les défis cognitifs.", "science": "Un état calme active le cortex préfrontal — ton centre de concentration." },
+    "energique": { "label": "Énergique", "message": "Super énergie ! Dirige-la d'abord avec un jeu de mouvement, puis passe aux défis.", "science": "L'exercice physique libère de la dopamine et améliore la concentration pendant 30 min." },
+    "stresse":   { "label": "Débordé",   "message": "Ton cerveau est surchargé. Commence par respirer — tu géreras mieux ensuite.", "science": "La respiration lente active le nerf vague et réduit le cortisol en 90 secondes." },
+    "triste":    { "label": "Triste",    "message": "C'est normal de se sentir comme ça. Prends soin de toi — une activité douce t'aidera.", "science": "L'expression créative aide à traiter les émotions difficiles et à les nommer." },
+    "agite":     { "label": "Agité",     "message": "Trop d'énergie dedans ! Bouge pour la libérer, puis ton cerveau sera plus libre.", "science": "L'agitation TDAH est souvent un signe de sous-stimulation dopaminergique — le mouvement aide." }
+  },
   "explorer": {
     "heroTitle": "Espace Explorateur 🚀",
     "heroGames": "{count} jeux adaptés à ton âge",
@@ -44,6 +59,8 @@
     "setAge": "Définir →",
     "alertNoAge": "⚠️ Âge non défini",
     "alertNoAgeDesc": "Demande à un parent de définir ton âge dans ton profil pour voir les jeux adaptés.",
+    "superTitle": "Mes Super-Pouvoirs TDAH",
+    "superDesc": "Découvre ce que ton cerveau a de spécial ✨",
     "sections": {
       "inhibition": "🛑 Inhibition & Contrôle",
       "inhibitionDesc": "Apprends à freiner avant d'agir",

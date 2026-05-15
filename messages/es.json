@@ -37,6 +37,21 @@
     "saveAgeHint": "Los juegos del explorador se adaptarán automáticamente",
     "whatAge": "¿Cuántos años tiene {name}?"
   },
+  "starsBar": {
+    "title": "Estrellas esta semana",
+    "noBadges": "¡Juega para ganar insignias!",
+    "weekDone": "🎉 ¡Objetivo semanal logrado — eres increíble!"
+  },
+  "thermostat": {
+    "title": "🌡️ ¿Cómo te sientes ahora?",
+    "subtitle": "Elige, la app te ayuda a encontrar la actividad correcta.",
+    "recommended": "Actividades recomendadas",
+    "calme":     { "label": "Tranquilo",   "message": "¡Tu cerebro está en plena forma! Es el momento ideal para los desafíos cognitivos.", "science": "Un estado tranquilo activa la corteza prefrontal — tu centro de concentración." },
+    "energique": { "label": "Energético",  "message": "¡Gran energía! Dirígela primero con un juego de movimiento, luego pasa a los desafíos.", "science": "El ejercicio físico libera dopamina y mejora la concentración durante 30 min." },
+    "stresse":   { "label": "Desbordado",  "message": "Tu cerebro está sobrecargado. Empieza por respirar — lo manejarás mejor después.", "science": "La respiración lenta activa el nervio vago y reduce el cortisol en 90 segundos." },
+    "triste":    { "label": "Triste",      "message": "Es normal sentirse así. Cuídate — una actividad suave te ayudará.", "science": "La expresión creativa ayuda a procesar las emociones difíciles y nombrarlas." },
+    "agite":     { "label": "Agitado",     "message": "¡Demasiada energía dentro! Muévete para liberarla, luego tu cerebro estará más libre.", "science": "La agitación del TDAH es a menudo una señal de falta de dopamina — el movimiento ayuda." }
+  },
   "explorer": {
     "heroTitle": "Espacio Explorador 🚀",
     "heroGames": "{count} juegos adaptados a tu edad",
@@ -44,6 +59,8 @@
     "setAge": "Definir →",
     "alertNoAge": "⚠️ Edad no definida",
     "alertNoAgeDesc": "Pide a un padre que defina tu edad en tu perfil para ver los juegos adaptados.",
+    "superTitle": "Mis Superpoderes TDAH",
+    "superDesc": "Descubre lo que hace especial tu cerebro ✨",
     "sections": {
       "inhibition": "🛑 Inhibición y Control",
       "inhibitionDesc": "Aprende a frenar antes de actuar",
