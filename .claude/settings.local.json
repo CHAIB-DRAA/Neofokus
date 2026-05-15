@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git push *)",
+      "Bash(git branch *)",
+      "mcp__claude_ai_Vercel__list_projects",
+      "Bash(vercel deploy *)",
+      "mcp__claude_ai_Vercel__get_project",
+      "mcp__claude_ai_Vercel__get_deployment_build_logs",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "Bash(git commit --allow-empty -m ' *)",
+      "mcp__claude_ai_Vercel__get_deployment",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(k\\) for k in d.get\\('exports',{}\\).keys\\(\\)]\")",
+      "Bash(cp -r app/explorateur \"app/[locale]/explorateur\")",
+      "Bash(cp -r app/parents \"app/[locale]/parents\")",
+      "Bash(cp app/page.tsx \"app/[locale]/page.tsx\")",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(git add *)"
+    ]
+  }
+}
