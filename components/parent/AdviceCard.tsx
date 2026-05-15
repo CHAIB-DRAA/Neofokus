@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -7,7 +8,7 @@ interface AdviceCardProps {
   href: string;
   emoji: string;
   tag: string;
-  tagStyle: string;
+  tagStyle: React.CSSProperties | string;
   title: string;
   preview: string;
   accentColor: string;
@@ -42,7 +43,7 @@ export default function AdviceCard({
           <span
             className="inline-block text-[10px] font-extrabold uppercase tracking-wider
               px-2.5 py-1 rounded-full mb-3"
-            style={tagStyle as any}
+            style={typeof tagStyle === "string" ? undefined : tagStyle}
           >
             {tag}
           </span>
