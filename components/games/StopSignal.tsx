@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 type GameState = "idle" | "playing" | "finished";
 
 export default function StopSignalGame() {
+  const t = useTranslations("g");
   const [gameState, setGameState] = useState<GameState>("idle");
   const [signal, setSignal] = useState<"go" | "stop">("go");
   const [scoreGood, setScoreGood] = useState(0);
@@ -93,14 +95,12 @@ export default function StopSignalGame() {
 
   return (
     <div>
-      {/* Instruction */}
       <div className="text-sm font-semibold text-[#1A5F7A] text-center mb-4">
-        {gameState === "idle" && "Appuie sur DÉMARRER et clique quand c'est 🟢 vert — STOP si rouge !"}
-        {gameState === "playing" && `⏱️ ${timeLeft}s — Clique sur VERT, arrête-toi sur ROUGE !`}
-        {gameState === "finished" && `Terminé ! Précision : ${accuracy}%`}
+        {gameState === "idle" && t("signal-stop.idle")}
+        {gameState === "playing" && t("signal-stop.playing", { time: timeLeft })}
+        {gameState === "finished" && t("signal-stop.finished", { pct: accuracy })}
       </div>
 
-      {/* Signal circle */}
       <div className="flex justify-center mb-5">
         <motion.button
           onClick={handleClick}
@@ -118,19 +118,17 @@ export default function StopSignalGame() {
         </motion.button>
       </div>
 
-      {/* Scores */}
       <div className="flex justify-center gap-8 mb-5">
         <div className="text-center">
           <div className="font-display text-3xl font-extrabold text-[#1A5F7A]">{scoreGood}</div>
-          <div className="text-xs font-semibold text-[#7A8BA0]">✅ Bons réflexes</div>
+          <div className="text-xs font-semibold text-[#7A8BA0]">{t("signal-stop.good")}</div>
         </div>
         <div className="text-center">
           <div className="font-display text-3xl font-extrabold text-[#E05050]">{scoreBad}</div>
-          <div className="text-xs font-semibold text-[#7A8BA0]">❌ Erreurs</div>
+          <div className="text-xs font-semibold text-[#7A8BA0]">{t("signal-stop.errors")}</div>
         </div>
       </div>
 
-      {/* Finished result */}
       {gameState === "finished" && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -138,23 +136,22 @@ export default function StopSignalGame() {
           className="bg-[#FFF3CD] rounded-2xl p-4 text-center mb-4 border border-[#FFD93D]"
         >
           <div className="font-display text-lg font-bold text-[#9C6800]">
-            {accuracy >= 80 ? "🌟 Excellent contrôle !" : accuracy >= 60 ? "👍 Bien joué !" : "💪 Continue à t'entraîner !"}
+            {accuracy >= 80 ? t("signal-stop.excellent") : accuracy >= 60 ? t("signal-stop.well") : t("signal-stop.keep")}
           </div>
           <div className="text-sm text-[#9C6800] font-semibold mt-1">
-            {scoreGood + scoreBad} signaux — {accuracy}% de précision
+            {scoreGood + scoreBad} {t("signal-stop.signals")} — {accuracy}% {t("signal-stop.prct")}
           </div>
         </motion.div>
       )}
 
-      {/* Buttons */}
       <div className="flex gap-3">
         {gameState !== "playing" ? (
           <button onClick={startGame} className="btn-primary btn-mint flex-1 justify-center">
-            {gameState === "finished" ? "🔄 Rejouer" : "▶ Démarrer"}
+            {gameState === "finished" ? t("signal-stop.replayBtn") : t("signal-stop.startBtn")}
           </button>
         ) : (
           <button onClick={resetGame} className="btn-primary btn-mint flex-1 justify-center opacity-80">
-            ⏹ Arrêter
+            {t("signal-stop.stopBtn")}
           </button>
         )}
       </div>

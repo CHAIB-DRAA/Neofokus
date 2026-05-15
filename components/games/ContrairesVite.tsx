@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 type Phase = "idle" | "playing" | "win";
 
@@ -11,32 +12,6 @@ interface Pair {
   correct: string;
   wrong: string;
 }
-
-const PAIRS: Pair[] = [
-  // Physique
-  { prompt: "🔥 Chaud",    correct: "❄️ Froid",    wrong: "☀️ Soleil" },
-  { prompt: "🐘 Grand",    correct: "🐭 Petit",     wrong: "🐬 Moyen" },
-  { prompt: "⬆️ Haut",     correct: "⬇️ Bas",       wrong: "➡️ Droite" },
-  { prompt: "💡 Allumé",   correct: "🌑 Éteint",    wrong: "🔆 Brillant" },
-  { prompt: "🐢 Lent",     correct: "🚀 Rapide",    wrong: "🐌 Très lent" },
-  { prompt: "💪 Fort",     correct: "🌸 Faible",    wrong: "🏋️ Musclé" },
-  // Émotions
-  { prompt: "😄 Joyeux",   correct: "😢 Triste",    wrong: "😮 Surpris" },
-  { prompt: "😡 Fâché",    correct: "😊 Calme",     wrong: "😤 Énervé" },
-  { prompt: "😰 Stressé",  correct: "😌 Relâché",   wrong: "😨 Apeuré" },
-  { prompt: "💖 Amour",    correct: "💔 Haine",     wrong: "💕 Tendresse" },
-  // Concepts
-  { prompt: "🌞 Jour",     correct: "🌙 Nuit",      wrong: "🌅 Aube" },
-  { prompt: "❓ Question",  correct: "✅ Réponse",   wrong: "❗ Exclamation" },
-  { prompt: "🏁 Début",    correct: "🔚 Fin",       wrong: "⏩ Milieu" },
-  { prompt: "😴 Dormir",   correct: "⚡ Réveiller", wrong: "🌙 Rêver" },
-  { prompt: "🤫 Silence",  correct: "📢 Bruit",     wrong: "🔇 Muet" },
-  { prompt: "☁️ Nuageux",  correct: "☀️ Ensoleillé", wrong: "🌧️ Pluvieux" },
-  { prompt: "🧊 Solide",   correct: "💧 Liquide",   wrong: "🌊 Vague" },
-  { prompt: "💤 Paresseux", correct: "🏃 Actif",    wrong: "😴 Endormi" },
-  { prompt: "🌍 Vide",     correct: "📦 Plein",     wrong: "🔳 Carré" },
-  { prompt: "🌑 Sombre",   correct: "✨ Lumineux",  wrong: "🌓 Demi" },
-];
 
 const DURATION = 60;
 
@@ -50,7 +25,13 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export default function ContrairesVite() {
+  const t = useTranslations("g");
+  const tg = useTranslations("game");
   const addStars = useQuestStore((s) => s.addStars);
+
+  const rawPairs = t.raw("contraires.pairs") as [string, string, string][];
+  const PAIRS: Pair[] = rawPairs.map(([prompt, correct, wrong]) => ({ prompt, correct, wrong }));
+
   const [phase, setPhase] = useState<Phase>("idle");
   const [queue, setQueue] = useState<Pair[]>([]);
   const [idx, setIdx] = useState(0);
@@ -104,7 +85,6 @@ export default function ContrairesVite() {
   const pair = queue[idx];
   const pct = (timeLeft / DURATION) * 100;
 
-  // Randomize button positions each question
   const leftIsCorrect = queue[idx] ? (idx % 2 === 0) : true;
 
   return (
@@ -114,37 +94,35 @@ export default function ContrairesVite() {
         {phase === "idle" && (
           <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-2">
             <div className="text-6xl mb-3">🔀</div>
-            <div className="font-display text-lg font-extrabold text-[#C02020] mb-2">Contraires Express</div>
+            <div className="font-display text-lg font-extrabold text-[#C02020] mb-2">Opposites Express</div>
             <div className="bg-[#FDECEA] rounded-2xl p-4 mb-3 text-sm text-[#C02020] font-semibold leading-relaxed text-left">
-              Tu vois un mot — choisis son <b>contraire</b> le plus vite possible ! 60 secondes pour marquer le plus de points.
+              {t("contraires.idle")}
             </div>
             <div className="text-xs text-[#7A8BA0] mb-5">
-              🔬 Entraîne la vitesse de traitement et la flexibilité mentale
+              {t("contraires.science")}
             </div>
             <button onClick={startGame} className="btn-primary mx-auto"
               style={{ background: "linear-gradient(135deg, #E05050, #FF922B)", color: "white", border: "none" }}>
-              🔀 C'est parti !
+              {t("contraires.startBtn")}
             </button>
           </motion.div>
         )}
 
         {phase === "playing" && pair && (
           <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {/* Timer */}
             <div className="flex items-center gap-2 mb-2">
               <div className="flex-1 h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
                 <motion.div className="h-full rounded-full"
                   style={{ background: pct > 50 ? "#5CC7A0" : pct > 20 ? "#FFD93D" : "#E05050",
                     width: `${pct}%` }} transition={{ duration: 0 }} />
               </div>
-              <span className="text-sm font-extrabold text-[#1E2A38] w-8">{timeLeft}s</span>
+              <span className="text-sm font-extrabold text-[#1E2A38] w-8">{timeLeft}{tg("seconds")}</span>
             </div>
 
             <div className="text-right text-xs font-extrabold text-[#5CC7A0] mb-4">
-              Score : {score}
+              {tg("score")}: {score}
             </div>
 
-            {/* Prompt */}
             <AnimatePresence mode="wait">
               <motion.div key={idx}
                 initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
@@ -155,11 +133,10 @@ export default function ContrairesVite() {
                   border: `2px solid ${flash === "ok" ? "#5CC7A0" : flash === "ko" ? "#E05050" : "#FFD93D"}`,
                 }}>
                 {pair.prompt}
-                <div className="text-sm font-bold text-[#7A8BA0] mt-1">Contraire →</div>
+                <div className="text-sm font-bold text-[#7A8BA0] mt-1">{t("contraires.opposite")}</div>
               </motion.div>
             </AnimatePresence>
 
-            {/* Answer buttons */}
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => answer(leftIsCorrect)}
@@ -183,16 +160,16 @@ export default function ContrairesVite() {
             className="rounded-3xl p-6 text-center"
             style={{ background: "linear-gradient(135deg, #FDECEA, #FFF9C4)" }}>
             <div className="text-4xl mb-2">🔀🏆</div>
-            <div className="font-display text-xl font-extrabold text-[#C02020] mb-1">Express terminé !</div>
+            <div className="font-display text-xl font-extrabold text-[#C02020] mb-1">{t("contraires.winTitle")}</div>
             <div className="text-5xl font-extrabold text-[#E05050] mb-1">{score}</div>
-            <div className="text-sm text-[#7A8BA0] mb-3">bonnes réponses en 60 secondes</div>
+            <div className="text-sm text-[#7A8BA0] mb-3">{t("contraires.winUnit")}</div>
             <div className="text-xs text-[#4A5568] font-semibold mb-4">
-              🔬 La vitesse de traitement s'améliore avec la pratique régulière.
+              {t("contraires.winScience")}
             </div>
             <button onClick={startGame}
               className="w-full py-3 rounded-2xl font-display font-extrabold text-white text-sm"
               style={{ background: "linear-gradient(135deg, #E05050, #FF922B)" }}>
-              🔀 Rejouer
+              🔀 {tg("replay")}
             </button>
           </motion.div>
         )}

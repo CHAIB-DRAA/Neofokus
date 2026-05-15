@@ -4,13 +4,16 @@ import { Link } from "@/lib/navigation";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import ChiffreFantome from "@/components/games/ChiffreFantome";
+import { useTranslations } from "next-intl";
 
 export default function ChiffresPage() {
+  const t = useTranslations("gamePages");
+  const tg = useTranslations("game");
   return (
     <div>
       <Link href="/explorateur" className="inline-flex items-center gap-2 text-sm font-bold
         text-[#7A8BA0] hover:text-[#1A5F7A] mb-4 transition-colors">
-        <ArrowLeft size={14} /> Retour
+        <ArrowLeft size={14} /> {tg("back_short")}
       </Link>
 
       <motion.div
@@ -23,14 +26,14 @@ export default function ChiffresPage() {
           style={{ background: "linear-gradient(135deg, #1E2A38, #4A5568)" }}>
           <span className="text-2xl">👻</span>
           <div>
-            <h1 className="font-display text-lg font-extrabold text-[#FFD93D]">Chiffres Fantômes</h1>
-            <p className="text-xs text-white/60 font-semibold">Mémoire numérique — Empan de chiffres · 8-12 ans</p>
+            <h1 className="font-display text-lg font-extrabold text-[#FFD93D]">Ghost Numbers</h1>
+            <p className="text-xs text-white/60 font-semibold">{t("chiffres.subtitle")}</p>
           </div>
         </div>
 
         <div className="p-5">
           <div className="bg-[#1E2A38] rounded-2xl p-4 mb-5 text-sm text-[#FFD93D] font-semibold leading-relaxed">
-            🔢 Des chiffres apparaissent un par un puis disparaissent — retiens la séquence et tape-la dans l'ordre pour entraîner ton <strong>empan de mémoire</strong> !
+            🔢 {t("chiffres.tip")}
           </div>
           <ChiffreFantome />
         </div>

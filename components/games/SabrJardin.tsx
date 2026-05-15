@@ -3,24 +3,19 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 type Phase = "idle" | "growing" | "result" | "win";
 
 const ROUNDS = [4000, 6000, 9000, 12000, 16000];
 
-const STAGES = [
-  { emoji: "🌱", label: "Graine",            min: 0    },
-  { emoji: "🌿", label: "Pousse",             min: 0.2  },
-  { emoji: "🪴", label: "Petite plante",     min: 0.4  },
-  { emoji: "🌺", label: "Bourgeon",           min: 0.6  },
-  { emoji: "🌸", label: "Fleur",              min: 0.8  },
-  { emoji: "🌻", label: "Pleine floraison",  min: 1.0  },
-];
+const STAGE_EMOJIS = ["🌱", "🌿", "🪴", "🌺", "🌸", "🌻"];
+const STAGE_MINS =   [0,    0.2,  0.4,  0.6,  0.8,  1.0];
 
-function getStage(r: number) {
-  for (let i = STAGES.length - 1; i >= 0; i--)
-    if (r >= STAGES[i].min) return STAGES[i];
-  return STAGES[0];
+function getStageIdx(r: number) {
+  for (let i = STAGE_EMOJIS.length - 1; i >= 0; i--)
+    if (r >= STAGE_MINS[i]) return i;
+  return 0;
 }
 
 function starsFor(r: number): number {
@@ -32,15 +27,11 @@ function starsFor(r: number): number {
   return 0;
 }
 
-const TIPS = [
-  "Regarde ta graine… elle a besoin de temps 🌱",
-  "Chaque seconde d'attente la fait grandir 🌿",
-  "Tu ressens l'envie de toucher ? Résiste encore… 💪",
-  "Ton cortex préfrontal se renforce à chaque seconde !",
-  "Dernière ronde — montre toute ta patience 🌻",
-];
-
 export default function JardinZen() {
+  const t = useTranslations("g");
+  const stageLabels = t.raw("sabr.stageLabels") as string[];
+  const tips = t.raw("sabr.tips") as string[];
+
   const addStars = useQuestStore((s) => s.addStars);
   const [phase, setPhase] = useState<Phase>("idle");
   const [roundIdx, setRoundIdx] = useState(0);
@@ -99,7 +90,7 @@ export default function JardinZen() {
 
   useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
 
-  const stage = getStage(ratio);
+  const stageIdx = getStageIdx(ratio);
   const previewStars = starsFor(ratio);
 
   return (
@@ -111,18 +102,17 @@ export default function JardinZen() {
             className="text-center py-2">
             <div className="text-6xl mb-3">🌱</div>
             <div className="font-display text-lg font-extrabold text-[#0F5C3A] mb-2">
-              Le Jardin de la Patience
+              Patience Garden
             </div>
             <div className="bg-[#B8EDD9] rounded-2xl p-4 mb-3 text-sm text-[#0F5C3A] font-semibold leading-relaxed text-left">
-              Laisse la plante grandir sans la toucher. Plus tu attends, plus elle fleurit.
-              Tu peux la cueillir quand tu veux — mais la patience porte ses fruits !
+              {t("sabr.idle")}
             </div>
             <div className="text-xs text-[#7A8BA0] mb-5">
-              🔬 Entraîne le cortex préfrontal — le centre d'autocontrôle du cerveau
+              {t("sabr.science")}
             </div>
             <button onClick={start} className="btn-primary mx-auto"
               style={{ background: "linear-gradient(135deg, #5CC7A0, #3A9FD4)", color: "white", border: "none" }}>
-              🌱 Planter ma graine !
+              {t("sabr.plantBtn")}
             </button>
           </motion.div>
         )}
@@ -131,10 +121,10 @@ export default function JardinZen() {
           <motion.div key="growing" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="text-center">
             <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A8BA0] mb-1">
-              Ronde {roundIdx + 1} / {ROUNDS.length}
+              {t("sabr.round", { current: roundIdx + 1, total: ROUNDS.length })}
             </div>
             <div className="text-xs font-semibold text-[#4A5568] italic mb-5 h-8 flex items-center justify-center px-4">
-              {TIPS[roundIdx]}
+              {tips[roundIdx]}
             </div>
 
             <div className="flex justify-center mb-3">
@@ -154,12 +144,12 @@ export default function JardinZen() {
                   transition={{ type: "spring", stiffness: 120 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <span style={{ fontSize: 56 }}>{stage.emoji}</span>
+                  <span style={{ fontSize: 56 }}>{STAGE_EMOJIS[stageIdx]}</span>
                 </motion.button>
               </div>
             </div>
 
-            <div className="font-display text-sm font-bold text-[#0F5C3A] mb-2">{stage.label}</div>
+            <div className="font-display text-sm font-bold text-[#0F5C3A] mb-2">{stageLabels[stageIdx]}</div>
 
             <div className="flex justify-center gap-1 mb-5">
               {[1,2,3,4,5].map((s) => (
@@ -177,7 +167,7 @@ export default function JardinZen() {
                 borderColor: ratio >= 1 ? "#5CC7A0" : "#E2E8F0",
                 color: ratio >= 1 ? "white" : "#7A8BA0",
               }}>
-              {ratio >= 1 ? "🌻 Cueillir — floraison complète !" : `✋ Cueillir maintenant (${previewStars} ⭐)`}
+              {ratio >= 1 ? t("sabr.harvestFull") : t("sabr.harvestNow", { stars: previewStars })}
             </button>
           </motion.div>
         )}
@@ -197,10 +187,10 @@ export default function JardinZen() {
               ))}
             </div>
             <div className="font-display text-base font-extrabold text-[#0F5C3A]">
-              {starsFor(harvestRatio) >= 4 ? "Quelle patience ! 🏆" :
-               starsFor(harvestRatio) >= 2 ? "Bien joué ! 💪" : "Continue de t'entraîner ! 🌱"}
+              {starsFor(harvestRatio) >= 4 ? t("sabr.great") :
+               starsFor(harvestRatio) >= 2 ? t("sabr.good") : t("sabr.keep")}
             </div>
-            <div className="text-xs text-[#7A8BA0] mt-1">Prochaine ronde…</div>
+            <div className="text-xs text-[#7A8BA0] mt-1">{t("sabr.nextRound")}</div>
           </motion.div>
         )}
 
@@ -211,7 +201,7 @@ export default function JardinZen() {
             style={{ background: "linear-gradient(135deg, #B8EDD9, #DBEAFE)" }}>
             <div className="text-4xl mb-2">🌻🌸🌺🌿🌱</div>
             <div className="font-display text-xl font-extrabold text-[#0F5C3A] mb-2">
-              Ton jardin a fleuri !
+              {t("sabr.winTitle")}
             </div>
             <div className="flex justify-center gap-2 flex-wrap mb-3">
               {earned.map((s, i) => (
@@ -221,12 +211,12 @@ export default function JardinZen() {
               ))}
             </div>
             <div className="text-xs text-[#4A5568] font-semibold mb-4">
-              🔬 En attendant, tu as renforcé ton cortex préfrontal — le siège de l'autocontrôle.
+              {t("sabr.winScience")}
             </div>
             <button onClick={start}
               className="w-full py-3 rounded-2xl font-display font-extrabold text-white text-sm"
               style={{ background: "linear-gradient(135deg, #5CC7A0, #3A9FD4)" }}>
-              🌱 Replanter mon jardin
+              {t("sabr.replant")}
             </button>
           </motion.div>
         )}

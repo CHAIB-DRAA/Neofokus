@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Map, RefreshCw, Sparkles } from "lucide-react";
 import StepItem from "./StepItem";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 export default function QuestPanel() {
+  const t = useTranslations("quest");
   const { currentQuest, setCurrentQuest, toggleStep, completeQuest, resetQuest } = useQuestStore();
   const [goalInput, setGoalInput] = useState("");
   const [stepInputs, setStepInputs] = useState(["", "", ""]);
@@ -70,7 +72,7 @@ export default function QuestPanel() {
       <div className="flex items-center gap-3 px-5 py-4"
         style={{ background: "linear-gradient(135deg, #5CC7A0, #7DC4E8)" }}>
         <span className="text-2xl">🗺️</span>
-        <h2 className="font-display text-lg font-extrabold text-white">Quête en 3 Micro-Pas</h2>
+        <h2 className="font-display text-lg font-extrabold text-white">{t("title")}</h2>
       </div>
 
       <div className="p-5">
@@ -84,14 +86,14 @@ export default function QuestPanel() {
               exit={{ opacity: 0, y: -6 }}
             >
               <label className="block text-sm font-bold text-[#4A5568] mb-2">
-                🎯 Quel est ton grand défi aujourd'hui ?
+                {t("goalLabel")}
               </label>
               <input
                 type="text"
                 value={goalInput}
                 onChange={(e) => setGoalInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleStart()}
-                placeholder="Ex : Ranger ma chambre, Faire mes devoirs…"
+                placeholder={t("goalPlaceholder")}
                 maxLength={80}
                 className={`w-full text-base font-semibold px-4 py-3 rounded-2xl border-2 outline-none
                   bg-[#F8F6F0] text-[#1E2A38] transition-all mb-4 ${
@@ -99,7 +101,7 @@ export default function QuestPanel() {
                 }`}
               />
               <button onClick={handleStart} className="btn-primary btn-mint w-full justify-center text-base">
-                <Sparkles size={16} /> Créer ma quête
+                <Sparkles size={16} /> {t("createBtn")}
               </button>
             </motion.div>
           ) : showCelebration ? (
@@ -113,13 +115,13 @@ export default function QuestPanel() {
             >
               <div className="text-4xl mb-2 tracking-widest">🎉🌟🎊⭐🏆</div>
               <h3 className="font-display text-2xl font-extrabold text-[#FF922B] mb-1">
-                Bravo, Explorateur·rice !
+                {t("bravoTitle")}
               </h3>
               <p className="text-sm font-semibold text-[#9C6800] mb-5">
-                Tu as terminé ta quête ! +5 étoiles gagnées ✨
+                {t("bravoDesc")}
               </p>
               <button onClick={handleNewQuest} className="btn-primary btn-mint mx-auto">
-                <Map size={15} /> Nouvelle quête
+                <Map size={15} /> {t("newQuest")}
               </button>
             </motion.div>
           ) : (
@@ -133,7 +135,7 @@ export default function QuestPanel() {
               {/* Goal header */}
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <div className="text-[10px] font-bold text-[#7A8BA0] uppercase tracking-wider">Mission</div>
+                  <div className="text-[10px] font-bold text-[#7A8BA0] uppercase tracking-wider">{t("missionLabel")}</div>
                   <div className="font-display text-base font-extrabold text-[#1A5F7A]">
                     {currentQuest.goal}
                   </div>
@@ -143,7 +145,7 @@ export default function QuestPanel() {
                   className="flex items-center gap-1 text-xs font-bold text-[#7A8BA0] border
                     border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition-all"
                 >
-                  <RefreshCw size={11} /> Changer
+                  <RefreshCw size={11} /> {t("changeBtn")}
                 </button>
               </div>
 
@@ -162,7 +164,7 @@ export default function QuestPanel() {
               </div>
 
               <p className="text-xs text-center text-[#7A8BA0] font-semibold">
-                Coche chaque pas une fois terminé ✅
+                {t("checkNote")}
               </p>
             </motion.div>
           )}

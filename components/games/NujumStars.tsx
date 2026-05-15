@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 type Phase = "idle" | "watch" | "recall" | "feedback" | "win" | "lose";
 
@@ -39,6 +40,8 @@ function generatePath(len: number): number[] {
 }
 
 export default function CarteCiel() {
+  const t = useTranslations("g");
+  const tg = useTranslations("game");
   const addStars = useQuestStore((s) => s.addStars);
   const [phase, setPhase]         = useState<Phase>("idle");
   const [levelIdx, setLevelIdx]   = useState(0);
@@ -139,17 +142,17 @@ export default function CarteCiel() {
             className="text-center py-2">
             <div className="text-6xl mb-3">🌌</div>
             <div className="font-display text-lg font-extrabold text-[#1A5F7A] mb-2">
-              Carte du Ciel
+              Sky Map
             </div>
             <div className="bg-[#BFE3F5] rounded-2xl p-4 mb-3 text-sm text-[#1A5F7A] font-semibold leading-relaxed text-left">
-              Regarde le chemin s'allumer dans le ciel étoilé, puis retrace-le dans le bon ordre en tapant les étoiles !
+              {t("nujum.idle")}
             </div>
             <div className="text-xs text-[#7A8BA0] mb-5">
-              🔬 Entraîne la mémoire spatiale — altérée dans le TDAH (Martinussen 2005)
+              {t("nujum.science")}
             </div>
             <button onClick={startGame} className="btn-primary mx-auto"
               style={{ background: "linear-gradient(135deg, #1A5F7A, #7DC4E8)", color: "white", border: "none" }}>
-              🌌 Explorer les étoiles
+              {t("nujum.startBtn")}
             </button>
           </motion.div>
         )}
@@ -158,7 +161,7 @@ export default function CarteCiel() {
           <motion.div key="game" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="flex items-center justify-between mb-2">
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A8BA0]">
-                Niveau {levelIdx + 1} / {LEVELS.length} — {path.length} étoiles
+                {t("nujum.level", { current: levelIdx + 1, total: LEVELS.length, n: path.length })}
               </div>
               <div className="flex gap-1">
                 {[1, 2, 3].map((i) => (
@@ -169,9 +172,9 @@ export default function CarteCiel() {
 
             <div className="text-center text-sm font-bold mb-3 h-5"
               style={{ color: phase === "feedback" ? (lastOk ? "#5CC7A0" : "#E05050") : "#1A5F7A" }}>
-              {phase === "watch" && "👁️ Mémorise le chemin…"}
-              {phase === "recall" && `✋ Retrace le chemin (${tapped.length}/${path.length})`}
-              {phase === "feedback" && (lastOk ? "✅ Parfait !" : "❌ Mauvaise étoile…")}
+              {phase === "watch" && t("nujum.watch")}
+              {phase === "recall" && t("nujum.recall", { current: tapped.length, total: path.length })}
+              {phase === "feedback" && (lastOk ? t("nujum.correct") : t("nujum.wrong"))}
             </div>
 
             <div className="rounded-3xl overflow-hidden mb-4 relative"
@@ -241,15 +244,15 @@ export default function CarteCiel() {
             transition={{ type: "spring" }} className="text-center py-6">
             <div className="text-5xl mb-3">🌌</div>
             <div className="font-display text-lg font-extrabold text-[#E05050] mb-2">
-              L'étoile s'est perdue…
+              {t("nujum.loseTitle")}
             </div>
             <div className="text-sm text-[#7A8BA0] mb-4">
-              Niveau {levelIdx + 1} — chaque tentative renforce ta mémoire spatiale !
+              {t("nujum.loseDesc", { level: levelIdx + 1 })}
             </div>
             <button onClick={startGame}
               className="w-full py-3 rounded-2xl font-display font-extrabold text-white text-sm"
               style={{ background: "linear-gradient(135deg, #1A5F7A, #7DC4E8)" }}>
-              🌌 Réessayer
+              🌌 {tg("tryAgain")}
             </button>
           </motion.div>
         )}
@@ -261,18 +264,18 @@ export default function CarteCiel() {
             style={{ background: "linear-gradient(135deg, #0B1A2E, #1A3358)" }}>
             <div className="text-4xl mb-2">🌟✨🌟</div>
             <div className="font-display text-xl font-extrabold text-[#FFD93D] mb-1">
-              Constellation tracée !
+              {t("nujum.winTitle")}
             </div>
             <div className="text-sm text-[#7DC4E8] mb-3">
-              {LEVELS[LEVELS.length - 1]} étoiles mémorisées — mémoire spatiale renforcée
+              {t("nujum.winDesc", { n: LEVELS[LEVELS.length - 1] })}
             </div>
             <div className="text-xs text-[#BFE3F5] font-semibold mb-4">
-              🔬 Ton hippocampe et ton cortex pariétal viennent de s'entraîner !
+              {t("nujum.winScience")}
             </div>
             <button onClick={startGame}
               className="w-full py-3 rounded-2xl font-display font-extrabold text-white text-sm"
               style={{ background: "linear-gradient(135deg, #1A5F7A, #7DC4E8)" }}>
-              🌌 Rejouer
+              🌌 {tg("replay")}
             </button>
           </motion.div>
         )}

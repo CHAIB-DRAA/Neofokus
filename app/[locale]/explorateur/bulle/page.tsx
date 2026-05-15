@@ -4,13 +4,16 @@ import { Link } from "@/lib/navigation";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import BulleCalme from "@/components/games/BulleCalme";
+import { useTranslations } from "next-intl";
 
 export default function BulleRepos() {
+  const t = useTranslations("gamePages");
+  const tg = useTranslations("game");
   return (
     <div>
       <Link href="/explorateur" className="inline-flex items-center gap-2 text-sm font-bold
         text-[#7A8BA0] hover:text-[#3D1F8A] mb-4 transition-colors">
-        <ArrowLeft size={14} /> Retour
+        <ArrowLeft size={14} /> {tg("back_short")}
       </Link>
 
       <motion.div
@@ -23,15 +26,14 @@ export default function BulleRepos() {
           style={{ background: "linear-gradient(135deg, #E8E0F8, #B8A8F0)" }}>
           <span className="text-2xl">🧘</span>
           <div>
-            <h1 className="font-display text-lg font-extrabold text-[#3D1F8A]">Bulle de calme</h1>
-            <p className="text-xs text-[#5B4082] font-semibold">Respiration guidée · Cohérence cardiaque</p>
+            <h1 className="font-display text-lg font-extrabold text-[#3D1F8A]">Calm Bubble</h1>
+            <p className="text-xs text-[#5B4082] font-semibold">{t("bulle.subtitle")}</p>
           </div>
         </div>
 
         <div className="p-5">
           <div className="bg-[#E8E0F8] rounded-2xl p-4 mb-5 text-sm text-[#3D1F8A] font-semibold leading-relaxed">
-            🫧 La respiration guidée calme le système nerveux en quelques minutes. 
-            Suis la bulle avec tes yeux et respire à son rythme.
+            🫧 {t("bulle.tip")}
           </div>
           <BulleCalme />
         </div>

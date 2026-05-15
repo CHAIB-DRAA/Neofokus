@@ -4,13 +4,16 @@ import { Link } from "@/lib/navigation";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import DefiCreatif from "@/components/games/DefiCreatif";
+import { useTranslations } from "next-intl";
 
 export default function CreatifPage() {
+  const t = useTranslations("gamePages");
+  const tg = useTranslations("game");
   return (
     <div>
       <Link href="/explorateur" className="inline-flex items-center gap-2 text-sm font-bold
         text-[#7A8BA0] hover:text-[#1A5F7A] mb-4 transition-colors">
-        <ArrowLeft size={14} /> Retour
+        <ArrowLeft size={14} /> {tg("back_short")}
       </Link>
 
       <motion.div
@@ -23,14 +26,14 @@ export default function CreatifPage() {
           style={{ background: "linear-gradient(135deg, #8E72DB, #C084FC)" }}>
           <span className="text-2xl">✍️</span>
           <div>
-            <h1 className="font-display text-lg font-extrabold text-white">Défi Créatif</h1>
-            <p className="text-xs text-white/80 font-semibold">Écriture libre — Créativité · 13+ ans</p>
+            <h1 className="font-display text-lg font-extrabold text-white">Creative Challenge</h1>
+            <p className="text-xs text-white/80 font-semibold">{t("creatif.subtitle")}</p>
           </div>
         </div>
 
         <div className="p-5">
           <div className="bg-[#E8E0F8] rounded-2xl p-4 mb-5 text-sm text-[#3D1F8A] font-semibold leading-relaxed">
-            ✨ Un sujet aléatoire, un minuteur, et tu laisses parler ton imagination ! Entraîne ton <strong>expression créative</strong> et ta <strong>flexibilité mentale</strong>.
+            ✨ {t("creatif.tip")}
           </div>
           <DefiCreatif />
         </div>

@@ -3,14 +3,17 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 type Phase = "idle" | "watch" | "recall" | "feedback" | "win" | "lose";
 
-const ORBS = [
-  { id: 0, color: "#FFD93D", glow: "#FFD93D60", label: "Soleil",  symbol: "☀️" },
-  { id: 1, color: "#5CC7A0", glow: "#5CC7A060", label: "Nature",  symbol: "🌿" },
-  { id: 2, color: "#7DC4E8", glow: "#7DC4E860", label: "Eau",     symbol: "💧" },
+const ORB_COLORS = [
+  { id: 0, color: "#FFD93D", glow: "#FFD93D60" },
+  { id: 1, color: "#5CC7A0", glow: "#5CC7A060" },
+  { id: 2, color: "#7DC4E8", glow: "#7DC4E860" },
 ];
+
+const ORB_SYMBOLS = ["☀️", "🌿", "💧"];
 
 const TOTAL_ROUNDS = 7;
 const BASE_LEN = 3;
@@ -21,7 +24,12 @@ function generateSequence(round: number): number[] {
 }
 
 export default function SequenceLumiere() {
+  const t = useTranslations("g");
+  const tg = useTranslations("game");
   const addStars = useQuestStore((s) => s.addStars);
+
+  const orbLabels = [t("dhikr.orbSun"), t("dhikr.orbNature"), t("dhikr.orbWater")];
+
   const [phase, setPhase]       = useState<Phase>("idle");
   const [round, setRound]       = useState(0);
   const [sequence, setSequence] = useState<number[]>([]);
@@ -112,18 +120,17 @@ export default function SequenceLumiere() {
             className="text-center py-2">
             <div className="text-6xl mb-3">💡</div>
             <div className="font-display text-lg font-extrabold text-[#3D1F8A] mb-2">
-              Séquence de Lumières
+              Light Sequence
             </div>
             <div className="bg-[#E8E0F8] rounded-2xl p-4 mb-3 text-sm text-[#3D1F8A] font-semibold leading-relaxed text-left">
-              Observe la séquence lumineuse, puis reproduis-la dans le même ordre !
-              La difficulté augmente à chaque ronde.
+              {t("dhikr.idle")}
             </div>
             <div className="text-xs text-[#7A8BA0] mb-5">
-              🔬 Entraîne la mémoire de travail — déficit central du TDAH (Martinussen 2005)
+              {t("dhikr.science")}
             </div>
             <button onClick={startGame} className="btn-primary mx-auto"
               style={{ background: "linear-gradient(135deg, #8E72DB, #5B8EDB)", color: "white", border: "none" }}>
-              💡 Commencer
+              {t("dhikr.startBtn")}
             </button>
           </motion.div>
         )}
@@ -132,7 +139,7 @@ export default function SequenceLumiere() {
           <motion.div key="game" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="flex items-center justify-between mb-3">
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A8BA0]">
-                Ronde {round + 1} / {TOTAL_ROUNDS} — {sequence.length} lumières
+                {t("dhikr.round", { current: round + 1, total: TOTAL_ROUNDS, n: sequence.length })}
               </div>
               <div className="flex gap-1">
                 {[1, 2, 3].map((i) => (
@@ -142,13 +149,13 @@ export default function SequenceLumiere() {
             </div>
 
             <div className="text-center text-sm font-bold text-[#8E72DB] mb-6 h-6">
-              {phase === "watch" && "👁️ Mémorise la séquence…"}
-              {phase === "recall" && "✋ À ton tour ! Reproduis la séquence"}
-              {phase === "feedback" && (lastCorrect ? "✅ Bien joué !" : "❌ Pas tout à fait…")}
+              {phase === "watch" && t("dhikr.watch")}
+              {phase === "recall" && t("dhikr.recall")}
+              {phase === "feedback" && (lastCorrect ? t("dhikr.correct") : t("dhikr.wrong"))}
             </div>
 
             <div className="flex justify-center gap-5 mb-6">
-              {ORBS.map((orb) => {
+              {ORB_COLORS.map((orb) => {
                 const isLit = showing === orb.id;
                 const inputActive = phase === "recall";
                 return (
@@ -171,10 +178,10 @@ export default function SequenceLumiere() {
                       cursor: inputActive ? "pointer" : "default",
                     }}
                   >
-                    {orb.symbol}
+                    {ORB_SYMBOLS[orb.id]}
                     <span className="text-[9px] font-bold mt-0.5"
                       style={{ color: isLit ? "#1E2A38" : orb.color }}>
-                      {orb.label}
+                      {orbLabels[orb.id]}
                     </span>
                   </motion.button>
                 );
@@ -188,7 +195,7 @@ export default function SequenceLumiere() {
                   <motion.div key={i}
                     animate={{ scale: tapped !== undefined ? 1 : 0.7 }}
                     className="w-2.5 h-2.5 rounded-full"
-                    style={{ background: tapped !== undefined ? ORBS[tapped].color : "#E2E8F0" }} />
+                    style={{ background: tapped !== undefined ? ORB_COLORS[tapped].color : "#E2E8F0" }} />
                 );
               })}
             </div>
@@ -200,15 +207,15 @@ export default function SequenceLumiere() {
             transition={{ type: "spring" }} className="text-center py-6">
             <div className="text-5xl mb-3">💡</div>
             <div className="font-display text-lg font-extrabold text-[#E05050] mb-2">
-              La mémoire se fatigue…
+              {t("dhikr.loseTitle")}
             </div>
             <div className="text-sm text-[#7A8BA0] mb-4">
-              Ronde {round + 1} — chaque essai renforce le cerveau !
+              {t("dhikr.loseDesc", { round: round + 1 })}
             </div>
             <button onClick={startGame}
               className="w-full py-3 rounded-2xl font-display font-extrabold text-white text-sm"
               style={{ background: "linear-gradient(135deg, #8E72DB, #5B8EDB)" }}>
-              💡 Réessayer
+              💡 {tg("tryAgain")}
             </button>
           </motion.div>
         )}
@@ -220,18 +227,18 @@ export default function SequenceLumiere() {
             style={{ background: "linear-gradient(135deg, #E8E0F8, #BFE3F5)" }}>
             <div className="text-4xl mb-2">💡✨</div>
             <div className="font-display text-xl font-extrabold text-[#3D1F8A] mb-1">
-              Séquence maîtrisée !
+              {t("dhikr.winTitle")}
             </div>
             <div className="text-sm text-[#7A8BA0] mb-3">
-              {TOTAL_ROUNDS} rondes complétées — mémoire de travail renforcée
+              {t("dhikr.winDesc", { rounds: TOTAL_ROUNDS })}
             </div>
             <div className="text-xs text-[#4A5568] font-semibold mb-4">
-              🔬 Tu viens d'entraîner ta boucle phonologique et ton registre visuospatial.
+              {t("dhikr.winScience")}
             </div>
             <button onClick={startGame}
               className="w-full py-3 rounded-2xl font-display font-extrabold text-white text-sm"
               style={{ background: "linear-gradient(135deg, #8E72DB, #5B8EDB)" }}>
-              💡 Rejouer
+              💡 {tg("replay")}
             </button>
           </motion.div>
         )}

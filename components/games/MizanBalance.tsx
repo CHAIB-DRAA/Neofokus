@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 type Phase = "idle" | "playing" | "feedback" | "win" | "lose";
 
@@ -19,59 +20,33 @@ interface Level {
   items: Item[];
 }
 
-const LEVELS: Level[] = [
-  {
-    leftLabel: "Léger", rightLabel: "Lourd",
-    leftEmoji: "🪶", rightEmoji: "🪨",
-    items: [
-      { label: "Plume", correct: "left" },
-      { label: "Rocher", correct: "right" },
-      { label: "Bulle", correct: "left" },
-      { label: "Montagne", correct: "right" },
-      { label: "Papier", correct: "left" },
-      { label: "Métal", correct: "right" },
-    ],
-  },
-  {
-    leftLabel: "Calme", rightLabel: "Énergique",
-    leftEmoji: "😌", rightEmoji: "⚡",
-    items: [
-      { label: "Respiration lente", correct: "left" },
-      { label: "Course rapide", correct: "right" },
-      { label: "Lire un livre", correct: "left" },
-      { label: "Sauter partout", correct: "right" },
-      { label: "Méditation", correct: "left" },
-      { label: "Danser vite", correct: "right" },
-    ],
-  },
-  {
-    leftLabel: "Aide en classe", rightLabel: "Distrait",
-    leftEmoji: "📚", rightEmoji: "📵",
-    items: [
-      { label: "Écouter le prof", correct: "left" },
-      { label: "Regarder par la fenêtre", correct: "right" },
-      { label: "Prendre des notes", correct: "left" },
-      { label: "Chatter avec un ami", correct: "right" },
-      { label: "Lever la main", correct: "left" },
-      { label: "Jouer en secret", correct: "right" },
-    ],
-  },
-  {
-    leftLabel: "Bienveillant", rightLabel: "Blessant",
-    leftEmoji: "💚", rightEmoji: "💔",
-    items: [
-      { label: "Partager son goûter", correct: "left" },
-      { label: "Se moquer", correct: "right" },
-      { label: "Aider quelqu'un", correct: "left" },
-      { label: "Taper", correct: "right" },
-      { label: "Dire merci", correct: "left" },
-      { label: "Insulter", correct: "right" },
-    ],
-  },
+const LEVEL_META = [
+  { leftEmoji: "🪶", rightEmoji: "🪨" },
+  { leftEmoji: "😌", rightEmoji: "⚡" },
+  { leftEmoji: "📚", rightEmoji: "📵" },
+  { leftEmoji: "💚", rightEmoji: "💔" },
 ];
 
 export default function GrandeBalance() {
+  const t = useTranslations("g");
+  const tg = useTranslations("game");
   const addStars = useQuestStore((s) => s.addStars);
+
+  const LEVELS: Level[] = LEVEL_META.map((meta, i) => {
+    const key = `mizan.l${i}` as "mizan.l0";
+    const data = t.raw(key) as { left: string; right: string; items: string[] };
+    return {
+      leftLabel:  data.left,
+      rightLabel: data.right,
+      leftEmoji:  meta.leftEmoji,
+      rightEmoji: meta.rightEmoji,
+      items: data.items.map((label, j) => ({
+        label,
+        correct: (j % 2 === 0 ? "left" : "right") as "left" | "right",
+      })),
+    };
+  });
+
   const [phase, setPhase] = useState<Phase>("idle");
   const [levelIdx, setLevelIdx] = useState(0);
   const [itemIdx, setItemIdx] = useState(0);
@@ -151,17 +126,17 @@ export default function GrandeBalance() {
             className="text-center py-2">
             <div className="text-6xl mb-3">⚖️</div>
             <div className="font-display text-lg font-extrabold text-[#9C6800] mb-2">
-              La Grande Balance
+              The Great Scale
             </div>
             <div className="bg-[#FFF9C4] rounded-2xl p-4 mb-3 text-sm text-[#9C6800] font-semibold leading-relaxed text-left">
-              Trie chaque carte du bon côté de la balance ! Entraîne ta flexibilité mentale en changeant de catégorie à chaque niveau.
+              {t("mizan.idle")}
             </div>
             <div className="text-xs text-[#7A8BA0] mb-5">
-              🔬 Entraîne la flexibilité cognitive — le cerveau TDAH apprend à changer de règle (set-shifting)
+              {t("mizan.science")}
             </div>
             <button onClick={startGame} className="btn-primary mx-auto"
               style={{ background: "linear-gradient(135deg, #FFD93D, #FF922B)", color: "white", border: "none" }}>
-              ⚖️ Équilibrer !
+              {t("mizan.startBtn")}
             </button>
           </motion.div>
         )}
@@ -170,7 +145,7 @@ export default function GrandeBalance() {
           <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="flex items-center justify-between mb-3">
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A8BA0]">
-                Niveau {levelIdx + 1} / {LEVELS.length}
+                {t("mizan.level", { current: levelIdx + 1, total: LEVELS.length })}
               </div>
               <div className="flex gap-1">
                 {[1, 2, 3].map((i) => (
@@ -184,7 +159,6 @@ export default function GrandeBalance() {
                 animate={{ width: `${progress * 100}%` }} />
             </div>
 
-            {/* Balance scale */}
             <div className="relative flex justify-center mb-5 h-36">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#9C6800] rounded-full z-10" />
               <div className="absolute top-2 left-1/2 -translate-x-1/2 w-0.5 h-8 bg-[#9C6800]" />
@@ -247,15 +221,15 @@ export default function GrandeBalance() {
             transition={{ type: "spring" }} className="text-center py-6">
             <div className="text-5xl mb-3">⚖️</div>
             <div className="font-display text-lg font-extrabold text-[#E05050] mb-2">
-              La balance est déséquilibrée…
+              {t("mizan.loseTitle")}
             </div>
             <div className="text-sm text-[#7A8BA0] mb-4">
-              {totalCorrect} / {totalItems} bonnes réponses — réessaie !
+              {t("mizan.loseDesc", { correct: totalCorrect, total: totalItems })}
             </div>
             <button onClick={startGame}
               className="w-full py-3 rounded-2xl font-display font-extrabold text-white text-sm"
               style={{ background: "linear-gradient(135deg, #FFD93D, #FF922B)" }}>
-              ⚖️ Réessayer
+              {t("mizan.loseBtn")}
             </button>
           </motion.div>
         )}
@@ -267,18 +241,18 @@ export default function GrandeBalance() {
             style={{ background: "linear-gradient(135deg, #FFF9C4, #FFE0B2)" }}>
             <div className="text-4xl mb-2">⚖️✨</div>
             <div className="font-display text-xl font-extrabold text-[#9C4400] mb-1">
-              Balance parfaite !
+              {t("mizan.winTitle")}
             </div>
             <div className="text-sm text-[#7A8BA0] mb-2">
-              {totalCorrect} / {totalItems} — flexibilité mentale entraînée
+              {t("mizan.winDesc", { correct: totalCorrect, total: totalItems })}
             </div>
             <div className="text-xs text-[#4A5568] font-semibold mb-4">
-              🔬 Ton cerveau vient de pratiquer le changement de règle — une fonction clé du cortex préfrontal.
+              {t("mizan.winScience")}
             </div>
             <button onClick={startGame}
               className="w-full py-3 rounded-2xl font-display font-extrabold text-white text-sm"
               style={{ background: "linear-gradient(135deg, #FFD93D, #FF922B)" }}>
-              ⚖️ Rejouer
+              🔄 {tg("replay")}
             </button>
           </motion.div>
         )}

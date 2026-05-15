@@ -6,6 +6,7 @@ import { useProfileStore, type Profile } from "@/lib/useProfileStore";
 import { useQuestStore } from "@/lib/useQuestStore";
 import { useRoutineStore } from "@/lib/useRoutineStore";
 import { Trash2, Plus, ArrowLeft, Pencil } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const AVATARS = [
   "🦊","🐼","🦁","🐨","🐯","🦋",
@@ -22,23 +23,7 @@ const COLORS: Array<{ bg: string; border: string; name: string }> = [
   { bg: "#FFF9C4", border: "#FFD93D", name: "Jaune"  },
 ];
 
-// Age groups shown as buttons
-const AGE_GROUPS = [
-  { label: "4 ans",  value: 4  },
-  { label: "5 ans",  value: 5  },
-  { label: "6 ans",  value: 6  },
-  { label: "7 ans",  value: 7  },
-  { label: "8 ans",  value: 8  },
-  { label: "9 ans",  value: 9  },
-  { label: "10 ans", value: 10 },
-  { label: "11 ans", value: 11 },
-  { label: "12 ans", value: 12 },
-  { label: "13 ans", value: 13 },
-  { label: "14 ans", value: 14 },
-  { label: "15 ans", value: 15 },
-  { label: "16 ans", value: 16 },
-  { label: "17 ans", value: 17 },
-];
+const AGE_VALUES = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
 interface Props {
   onClose?: () => void;
@@ -59,6 +44,7 @@ function deleteProfile(profileId: string) {
 }
 
 export default function ProfileSelector({ onClose }: Props) {
+  const t = useTranslations("profile");
   const { profiles, currentProfileId, createProfile, updateProfile } = useProfileStore();
 
   type Mode = "list" | "create" | "edit-age";
@@ -133,18 +119,18 @@ export default function ProfileSelector({ onClose }: Props) {
           ) : null}
           <div className="flex-1">
             <div className="font-display text-xl font-extrabold text-[#1E2A38]">
-              {mode === "list" ? "Qui joue aujourd'hui ? 👋" :
-               mode === "create" ? "Nouveau profil" :
-               `Âge de ${editingProfile?.name ?? ""}`}
+              {mode === "list" ? t("whoPlays") :
+               mode === "create" ? t("newProfile") :
+               t("editAge", { name: editingProfile?.name ?? "" })}
             </div>
             {mode === "list" && (
               <div className="text-xs text-[#7A8BA0] font-semibold mt-0.5">
-                Chaque profil garde sa progression
+                {t("progressKept")}
               </div>
             )}
             {mode === "edit-age" && (
               <div className="text-xs text-[#7A8BA0] font-semibold mt-0.5">
-                Les jeux s'adaptent à l'âge
+                {t("ageAdapts")}
               </div>
             )}
           </div>
@@ -175,13 +161,13 @@ export default function ProfileSelector({ onClose }: Props) {
                             {p.name}
                           </div>
                           {p.age !== null && p.age !== undefined ? (
-                            <div className="text-xs font-bold text-[#7A8BA0]">{p.age} ans</div>
+                            <div className="text-xs font-bold text-[#7A8BA0]">{p.age} {t("ageUnit")}</div>
                           ) : (
-                            <div className="text-xs font-bold text-[#FF922B]">⚠️ Âge non défini</div>
+                            <div className="text-xs font-bold text-[#FF922B]">{t("noAge")}</div>
                           )}
                         </div>
                         {p.id === currentProfileId && (
-                          <span className="text-[10px] font-extrabold text-[#5CC7A0] uppercase tracking-wider">Actif</span>
+                          <span className="text-[10px] font-extrabold text-[#5CC7A0] uppercase tracking-wider">{t("active")}</span>
                         )}
                       </button>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -204,7 +190,7 @@ export default function ProfileSelector({ onClose }: Props) {
                   onClick={goCreate}
                   className="w-full flex items-center justify-center gap-2 rounded-2xl py-3 border-2 border-dashed border-[#E2E8F0]
                     text-sm font-bold text-[#7A8BA0] hover:border-[#5B9CF6] hover:text-[#5B9CF6] transition-all">
-                  <Plus size={15} /> Ajouter un profil
+                  <Plus size={15} /> {t("addProfile")}
                 </button>
               </motion.div>
             )}
@@ -224,7 +210,7 @@ export default function ProfileSelector({ onClose }: Props) {
                 <input
                   type="text" value={name} onChange={(e) => setName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                  placeholder="Prénom de l'enfant…" maxLength={20} autoFocus
+                  placeholder={t("namePlaceholder")} maxLength={20} autoFocus
                   className={`w-full text-base font-bold px-4 py-3 rounded-2xl border-2 outline-none mb-4
                     bg-[#F8F6F0] text-[#1E2A38] transition-all ${
                     nameError ? "border-[#E05050]" : "border-[#E2E8F0] focus:border-[#5B9CF6] focus:bg-white"
@@ -233,7 +219,7 @@ export default function ProfileSelector({ onClose }: Props) {
 
                 {/* Avatar */}
                 <div className="mb-4">
-                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A8BA0] mb-2">Avatar</div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A8BA0] mb-2">{t("avatarLabel")}</div>
                   <div className="grid grid-cols-6 gap-1.5">
                     {AVATARS.map((a) => (
                       <button key={a} onClick={() => setAvatar(a)}
@@ -248,7 +234,7 @@ export default function ProfileSelector({ onClose }: Props) {
 
                 {/* Color */}
                 <div className="mb-4">
-                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A8BA0] mb-2">Couleur</div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A8BA0] mb-2">{t("colorLabel")}</div>
                   <div className="flex gap-2">
                     {COLORS.map((c, i) => (
                       <button key={c.name} onClick={() => setColorIdx(i)}
@@ -264,30 +250,30 @@ export default function ProfileSelector({ onClose }: Props) {
                 {/* Age — required */}
                 <div className="mb-5">
                   <div className={`text-[10px] font-extrabold uppercase tracking-wider mb-2 ${ageError ? "text-[#E05050]" : "text-[#7A8BA0]"}`}>
-                    Âge de l'enfant {ageError && "— obligatoire !"}
+                    {t("ageLabel")} {ageError && t("ageError")}
                   </div>
                   <div className="grid grid-cols-4 gap-1.5">
-                    {AGE_GROUPS.map((ag) => (
-                      <button key={ag.value} onClick={() => setAge(ag.value)}
+                    {AGE_VALUES.map((v) => (
+                      <button key={v} onClick={() => setAge(v)}
                         className="py-2 rounded-xl text-xs font-extrabold border-2 transition-all"
                         style={{
-                          background: age === ag.value ? "#5B9CF6" : "#F8F6F0",
-                          borderColor: age === ag.value ? "#5B9CF6" : ageError ? "#E05050" : "#E2E8F0",
-                          color: age === ag.value ? "white" : "#1E2A38",
+                          background: age === v ? "#5B9CF6" : "#F8F6F0",
+                          borderColor: age === v ? "#5B9CF6" : ageError ? "#E05050" : "#E2E8F0",
+                          color: age === v ? "white" : "#1E2A38",
                         }}>
-                        {ag.label}
+                        {v} {t("ageUnit")}
                       </button>
                     ))}
                   </div>
                   <p className="text-[10px] text-[#7A8BA0] font-semibold mt-2">
-                    Les jeux affichés s'adaptent automatiquement à l'âge
+                    {t("ageHint")}
                   </p>
                 </div>
 
                 <button onClick={handleCreate}
                   className="w-full py-3.5 rounded-2xl font-display font-extrabold text-white text-base"
                   style={{ background: "linear-gradient(135deg, #5B9CF6, #8E72DB)" }}>
-                  Créer le profil ✨
+                  {t("createBtn")}
                 </button>
               </motion.div>
             )}
@@ -305,19 +291,19 @@ export default function ProfileSelector({ onClose }: Props) {
                   {editingProfile.name}
                 </div>
                 <div className="text-center text-xs text-[#7A8BA0] font-semibold mb-4">
-                  Quel âge a {editingProfile.name} ?
+                  {t("whatAge", { name: editingProfile.name })}
                 </div>
 
                 <div className="grid grid-cols-4 gap-1.5 mb-5">
-                  {AGE_GROUPS.map((ag) => (
-                    <button key={ag.value} onClick={() => setAge(ag.value)}
+                  {AGE_VALUES.map((v) => (
+                    <button key={v} onClick={() => setAge(v)}
                       className="py-2.5 rounded-xl text-xs font-extrabold border-2 transition-all"
                       style={{
-                        background: age === ag.value ? "#5B9CF6" : "#F8F6F0",
-                        borderColor: age === ag.value ? "#5B9CF6" : "#E2E8F0",
-                        color: age === ag.value ? "white" : "#1E2A38",
+                        background: age === v ? "#5B9CF6" : "#F8F6F0",
+                        borderColor: age === v ? "#5B9CF6" : "#E2E8F0",
+                        color: age === v ? "white" : "#1E2A38",
                       }}>
-                      {ag.label}
+                      {v} {t("ageUnit")}
                     </button>
                   ))}
                 </div>
@@ -328,11 +314,11 @@ export default function ProfileSelector({ onClose }: Props) {
                     background: age !== null ? "linear-gradient(135deg, #5B9CF6, #8E72DB)" : "#E2E8F0",
                     color: age !== null ? "white" : "#B0B8C4",
                   }}>
-                  ✅ Enregistrer l'âge
+                  {t("saveAge")}
                 </button>
 
                 <p className="text-[10px] text-[#7A8BA0] font-semibold mt-2 text-center">
-                  Les jeux de l'explorateur s'adapteront automatiquement
+                  {t("saveAgeHint")}
                 </p>
               </motion.div>
             )}

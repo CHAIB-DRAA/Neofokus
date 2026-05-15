@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 type Phase = "idle" | "showing" | "input" | "correct" | "wrong" | "levelup" | "gameover";
 
@@ -13,6 +14,8 @@ const EMOJI_SETS = [
 ];
 
 export default function MemoireFlash() {
+  const t = useTranslations("g");
+  const tg = useTranslations("game");
   const addStars = useQuestStore((s) => s.addStars);
   const [level, setLevel] = useState(1);
   const [score, setScore] = useState(0);
@@ -21,7 +24,6 @@ export default function MemoireFlash() {
   const [sequence, setSequence] = useState<string[]>([]);
   const [userSeq, setUserSeq] = useState<string[]>([]);
   const [activeIdx, setActiveIdx] = useState(-1);
-  const [emojiSet, setEmojiSet] = useState(EMOJI_SETS[0]);
   const [gridEmojis, setGridEmojis] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
 
@@ -34,7 +36,6 @@ export default function MemoireFlash() {
 
   const startRound = useCallback(() => {
     const set = EMOJI_SETS[Math.floor(Math.random() * EMOJI_SETS.length)];
-    setEmojiSet(set);
     const grid = buildGrid(set);
     setGridEmojis(grid);
     const seq = Array.from({ length: sequenceLength }, () => grid[Math.floor(Math.random() * grid.length)]);
@@ -42,7 +43,6 @@ export default function MemoireFlash() {
     setUserSeq([]);
     setPhase("showing");
 
-    // Show sequence one by one
     seq.forEach((_, i) => {
       setTimeout(() => setActiveIdx(i), i * 900);
     });
@@ -59,7 +59,6 @@ export default function MemoireFlash() {
 
     const pos = newSeq.length - 1;
     if (emoji !== sequence[pos]) {
-      // Wrong
       setFeedback("wrong");
       setPhase("wrong");
       const newLives = lives - 1;
@@ -77,7 +76,6 @@ export default function MemoireFlash() {
     }
 
     if (newSeq.length === sequence.length) {
-      // All correct
       setFeedback("correct");
       setPhase("correct");
       const pts = level * sequenceLength;
@@ -107,7 +105,6 @@ export default function MemoireFlash() {
 
   return (
     <div className="space-y-4">
-      {/* Header stats */}
       {phase !== "idle" && (
         <div className="flex items-center justify-between">
           <div className="flex gap-1">
@@ -116,25 +113,24 @@ export default function MemoireFlash() {
             ))}
           </div>
           <div className="font-display text-base font-extrabold text-[#1E2A38]">
-            {score} pts
+            {score} {tg("pts")}
           </div>
           <div className="text-xs font-bold px-3 py-1 rounded-full bg-[#E8E0F8] text-[#3D1F8A]">
-            Niveau {level}
+            {tg("level")} {level}
           </div>
         </div>
       )}
 
-      {/* Idle screen */}
       <AnimatePresence mode="wait">
         {phase === "idle" && (
           <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-4">
             <div className="text-5xl mb-3">🧠</div>
-            <div className="font-display text-lg font-bold text-[#1E2A38] mb-1">Mémoire Flash</div>
+            <div className="font-display text-lg font-bold text-[#1E2A38] mb-1">Flash Memory</div>
             <div className="text-sm text-[#7A8BA0] mb-5 max-w-xs mx-auto">
-              Mémorise la séquence d'émojis, puis reproduis-la dans le bon ordre !
+              {t("memoire.idle")}
             </div>
             <button onClick={startRound} className="btn-primary btn-mint mx-auto">
-              🧠 Jouer !
+              {t("memoire.playBtn")}
             </button>
           </motion.div>
         )}
@@ -148,28 +144,28 @@ export default function MemoireFlash() {
           >
             <div className="text-4xl mb-2">😅</div>
             <div className="font-display text-lg font-bold text-[#1E2A38] mb-1">
-              Partie terminée !
+              {t("memoire.gameover")}
             </div>
-            <div className="text-sm text-[#7A8BA0] mb-2">Score final : {score} points · Niveau {level}</div>
+            <div className="text-sm text-[#7A8BA0] mb-2">
+              {t("memoire.gameoverScore", { score, level })}
+            </div>
             <div className="bg-[#FFF3CD] rounded-2xl p-3 mb-4 text-xs font-semibold text-[#9C6800]">
-              🌟 Tu as entraîné ta mémoire de travail. Chaque partie te rend plus fort·e !
+              {t("memoire.motivation")}
             </div>
             <button onClick={resetGame} className="btn-primary btn-mint mx-auto">
-              🔄 Rejouer
+              🔄 {tg("replay")}
             </button>
           </motion.div>
         )}
 
         {(phase === "showing" || phase === "input" || phase === "correct" || phase === "wrong") && (
           <motion.div key="game" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {/* Instruction */}
             <div className="text-center mb-3">
               <div className="text-xs font-bold text-[#7A8BA0] uppercase tracking-wider mb-1">
-                {phase === "showing" ? `Mémorise ${sequenceLength} émojis…` :
-                 phase === "input" ? `Reproduis la séquence (${userSeq.length}/${sequence.length})` :
-                 phase === "correct" ? "✅ Parfait !" : "❌ Pas tout à fait…"}
+                {phase === "showing" ? t("memoire.memorize", { n: sequenceLength }) :
+                 phase === "input" ? t("memoire.reproduce", { current: userSeq.length, total: sequence.length }) :
+                 phase === "correct" ? t("memoire.correct") : t("memoire.wrong")}
               </div>
-              {/* Sequence display during showing */}
               <div className="flex justify-center gap-2 mb-1 h-10 items-center">
                 {sequence.map((e, i) => (
                   <motion.div
@@ -182,7 +178,6 @@ export default function MemoireFlash() {
                   </motion.div>
                 ))}
               </div>
-              {/* User progress */}
               {phase === "input" && (
                 <div className="flex justify-center gap-1.5">
                   {sequence.map((_, i) => (
@@ -196,7 +191,6 @@ export default function MemoireFlash() {
               )}
             </div>
 
-            {/* Emoji grid */}
             <motion.div
               className="grid grid-cols-3 gap-2"
               animate={feedback === "wrong" ? { x: [-4, 4, -3, 3, 0] } : {}}
@@ -234,9 +228,9 @@ export default function MemoireFlash() {
           >
             <div className="text-4xl mb-2">🚀⭐🎉</div>
             <div className="font-display text-xl font-extrabold text-[#5CC7A0]">
-              Niveau {level} !
+              {tg("level")} {level}!
             </div>
-            <div className="text-sm text-[#7A8BA0] mt-1">La séquence va s'allonger…</div>
+            <div className="text-sm text-[#7A8BA0] mt-1">{t("memoire.levelup")}</div>
           </motion.div>
         )}
       </AnimatePresence>

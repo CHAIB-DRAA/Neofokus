@@ -4,13 +4,16 @@ import { Link } from "@/lib/navigation";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import CouleursRigolos from "@/components/games/CouleursRigolos";
+import { useTranslations } from "next-intl";
 
 export default function CouleursPage() {
+  const t = useTranslations("gamePages");
+  const tg = useTranslations("game");
   return (
     <div>
       <Link href="/explorateur" className="inline-flex items-center gap-2 text-sm font-bold
         text-[#7A8BA0] hover:text-[#1A5F7A] mb-4 transition-colors">
-        <ArrowLeft size={14} /> Retour
+        <ArrowLeft size={14} /> {tg("back_short")}
       </Link>
 
       <motion.div
@@ -23,14 +26,14 @@ export default function CouleursPage() {
           style={{ background: "linear-gradient(135deg, #FFD93D, #FF922B)" }}>
           <span className="text-2xl">🎨</span>
           <div>
-            <h1 className="font-display text-lg font-extrabold text-white">Couleurs Rigolos</h1>
-            <p className="text-xs text-white/80 font-semibold">Activité visuelle — Reconnaissance des couleurs · 3-5 ans</p>
+            <h1 className="font-display text-lg font-extrabold text-white">Color Fun</h1>
+            <p className="text-xs text-white/80 font-semibold">{t("couleurs.subtitle")}</p>
           </div>
         </div>
 
         <div className="p-5">
           <div className="bg-[#FFF9C4] rounded-2xl p-4 mb-5 text-sm text-[#9C6800] font-semibold leading-relaxed">
-            🌈 Ce jeu entraîne la <strong>reconnaissance visuelle</strong> et l'<strong>attention</strong> — trouve la couleur de l'animal aussi vite que possible !
+            🌈 {t("couleurs.tip")}
           </div>
           <CouleursRigolos />
         </div>

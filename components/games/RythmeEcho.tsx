@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 type Phase = "idle" | "watch" | "repeat" | "correct" | "wrong" | "gameover" | "win";
 
@@ -18,6 +19,8 @@ const FLASH_DURATION = 450;
 const FLASH_GAP = 200;
 
 export default function RythmeEcho() {
+  const t = useTranslations("g");
+  const tg = useTranslations("game");
   const addStars = useQuestStore((s) => s.addStars);
   const [phase, setPhase] = useState<Phase>("idle");
   const [sequence, setSequence] = useState<number[]>([]);
@@ -109,9 +112,9 @@ export default function RythmeEcho() {
         {phase === "idle" && (
           <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-4">
             <div className="text-5xl mb-3">🥁</div>
-            <div className="font-display text-lg font-bold text-[#1E2A38] mb-1">Rythme Écho</div>
+            <div className="font-display text-lg font-bold text-[#1E2A38] mb-1">Echo Rhythm</div>
             <div className="text-sm text-[#7A8BA0] mb-4 max-w-xs mx-auto">
-              Regarde la séquence de couleurs qui s'allume — puis reproduis-la dans le même ordre !
+              {t("rythme.idle")}
             </div>
             <div className="grid grid-cols-2 gap-2 max-w-[180px] mx-auto mb-6">
               {PADS.map((p) => (
@@ -123,25 +126,23 @@ export default function RythmeEcho() {
             </div>
             <button onClick={startGame} className="btn-primary mx-auto"
               style={{ background: "linear-gradient(135deg, #E05050, #FF922B)", color: "white", border: "none" }}>
-              🥁 Commencer !
+              {t("rythme.startBtn")}
             </button>
           </motion.div>
         )}
 
         {(phase === "watch" || phase === "repeat" || phase === "correct" || phase === "wrong") && (
           <motion.div key="game" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-            {/* Status bar */}
             <div className="flex justify-between items-center text-xs font-bold">
               <div className="flex gap-1">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <span key={i} style={{ opacity: i < lives ? 1 : 0.2 }} className="text-lg">❤️</span>
                 ))}
               </div>
-              <div className="text-[#E05050]">Niveau {level}/{MAX_LEVELS}</div>
-              <div className="text-[#FF922B]">⭐ {score} pts</div>
+              <div className="text-[#E05050]">{tg("level")} {level}/{MAX_LEVELS}</div>
+              <div className="text-[#FF922B]">⭐ {score} {tg("pts")}</div>
             </div>
 
-            {/* Instruction */}
             <motion.div
               key={phase}
               initial={{ opacity: 0, y: -4 }}
@@ -156,16 +157,14 @@ export default function RythmeEcho() {
                        phase === "correct" ? "#0F5C3A" : "#C02020",
               }}
             >
-              {phase === "watch" ? `👀 Regarde bien la séquence (${sequence.length} étapes)…` :
-               phase === "repeat" ? `🎯 À toi ! Reproduis les ${sequence.length} couleurs` :
-               phase === "correct" ? "✅ Parfait ! Niveau suivant…" : "❌ Raté ! On réessaie…"}
+              {phase === "watch" ? t("rythme.watch", { n: sequence.length }) :
+               phase === "repeat" ? t("rythme.repeat", { n: sequence.length }) :
+               phase === "correct" ? t("rythme.correct") : t("rythme.wrong")}
             </motion.div>
 
-            {/* Pads */}
             <div className="grid grid-cols-2 gap-3 max-w-[260px] mx-auto">
               {PADS.map((p) => {
                 const isActive = activeId === p.id;
-                const repeatDone = phase === "repeat" ? userInput.filter((x) => x === p.id).length : 0;
                 return (
                   <motion.button
                     key={p.id}
@@ -189,7 +188,6 @@ export default function RythmeEcho() {
               })}
             </div>
 
-            {/* Progress dots */}
             {phase === "repeat" && (
               <div className="flex justify-center gap-1.5">
                 {sequence.map((_, i) => (
@@ -212,17 +210,17 @@ export default function RythmeEcho() {
             <div className="text-4xl mb-3">{phase === "win" ? "🏆🎉🌟" : "😅💪🥁"}</div>
             <div className="font-display text-xl font-extrabold mb-1"
               style={{ color: phase === "win" ? "#5CC7A0" : "#E05050" }}>
-              {phase === "win" ? "Champion du rythme !" : "Bonne tentative !"}
+              {phase === "win" ? t("rythme.winTitle") : t("rythme.loseTitle")}
             </div>
             <div className="text-sm text-[#7A8BA0] mb-4">
-              Score : {score} pts · Niveau atteint : {level}
+              {t("rythme.scoreLabel", { score, level })}
             </div>
             <div className="bg-[#DBEAFE] rounded-2xl p-3 mb-5 text-xs font-semibold text-[#1A4FA0]">
-              🧠 Ce jeu entraîne ta <strong>mémoire de travail</strong> et ton sens du <strong>rythme</strong> !
+              {t("rythme.science")}
             </div>
             <button onClick={startGame} className="btn-primary mx-auto"
               style={{ background: "linear-gradient(135deg, #E05050, #FF922B)", color: "white", border: "none" }}>
-              🔄 Rejouer
+              🔄 {tg("replay")}
             </button>
           </motion.div>
         )}

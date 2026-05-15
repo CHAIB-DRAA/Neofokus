@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestStore } from "@/lib/useQuestStore";
+import { useTranslations } from "next-intl";
 
 const DURATIONS = [
   { label: "2 min", seconds: 120, color: "#5CC7A0", bg: "#B8EDD9" },
@@ -10,21 +11,16 @@ const DURATIONS = [
   { label: "10 min", seconds: 600, color: "#8E72DB", bg: "#E8E0F8" },
 ];
 
-const FOCUS_TASKS = [
-  "Lis 1 page de ton livre 📖",
-  "Fais tes exercices de maths ✏️",
-  "Range 5 affaires 🧹",
-  "Dessine quelque chose 🎨",
-  "Écris 3 phrases 📝",
-];
-
 type Phase = "idle" | "focus" | "break" | "done";
 
 export default function DefMinuteur() {
+  const t = useTranslations("g");
+  const focusTasks = t.raw("minuteur.tasks") as string[];
+
   const [selectedDur, setSelectedDur] = useState(DURATIONS[1]);
   const [phase, setPhase] = useState<Phase>("idle");
   const [timeLeft, setTimeLeft] = useState(DURATIONS[1].seconds);
-  const [task, setTask] = useState(FOCUS_TASKS[0]);
+  const [task, setTask] = useState(focusTasks[0]);
   const [customTask, setCustomTask] = useState("");
   const [rounds, setRounds] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -74,11 +70,10 @@ export default function DefMinuteur() {
 
   return (
     <div className="space-y-5">
-      {/* Duration selector */}
       {phase === "idle" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="text-xs font-bold text-[#7A8BA0] uppercase tracking-wider mb-2">
-            Choisir la durée
+            {t("minuteur.durationLabel")}
           </div>
           <div className="flex gap-2">
             {DURATIONS.map((d) => (
@@ -99,25 +94,24 @@ export default function DefMinuteur() {
         </motion.div>
       )}
 
-      {/* Task selector */}
       {phase === "idle" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
           <div className="text-xs font-bold text-[#7A8BA0] uppercase tracking-wider mb-2">
-            Ma mission
+            {t("minuteur.missionLabel")}
           </div>
           <div className="flex flex-wrap gap-2 mb-3">
-            {FOCUS_TASKS.map((t) => (
+            {focusTasks.map((ft) => (
               <button
-                key={t}
-                onClick={() => { setTask(t); setCustomTask(""); }}
+                key={ft}
+                onClick={() => { setTask(ft); setCustomTask(""); }}
                 className="text-xs font-semibold px-3 py-1.5 rounded-full border transition-all"
                 style={{
-                  background: task === t && !customTask ? "#BFE3F5" : "transparent",
-                  borderColor: task === t && !customTask ? "#7DC4E8" : "#E2E8F0",
-                  color: task === t && !customTask ? "#1A5F7A" : "#7A8BA0",
+                  background: task === ft && !customTask ? "#BFE3F5" : "transparent",
+                  borderColor: task === ft && !customTask ? "#7DC4E8" : "#E2E8F0",
+                  color: task === ft && !customTask ? "#1A5F7A" : "#7A8BA0",
                 }}
               >
-                {t}
+                {ft}
               </button>
             ))}
           </div>
@@ -125,14 +119,13 @@ export default function DefMinuteur() {
             type="text"
             value={customTask}
             onChange={(e) => { setCustomTask(e.target.value); setTask(e.target.value); }}
-            placeholder="Ou tape ta propre mission…"
+            placeholder={t("minuteur.customPlaceholder")}
             className="w-full text-sm px-4 py-2.5 rounded-2xl border-2 border-gray-100
               bg-[#F8F6F0] outline-none focus:border-[#7DC4E8] text-[#1E2A38] font-semibold"
           />
         </motion.div>
       )}
 
-      {/* Timer circle */}
       <div className="flex flex-col items-center py-4">
         <div className="relative w-36 h-36 mb-4">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
@@ -153,12 +146,11 @@ export default function DefMinuteur() {
               {mins}:{secs}
             </div>
             <div className="text-xs font-semibold text-[#7A8BA0]">
-              {phase === "focus" ? "FOCUS" : phase === "done" ? "BRAVO !" : "PRÊT"}
+              {phase === "focus" ? t("minuteur.focus") : phase === "done" ? t("minuteur.bravo") : t("minuteur.ready")}
             </div>
           </div>
         </div>
 
-        {/* Task label during focus */}
         <AnimatePresence>
           {phase === "focus" && (
             <motion.div
@@ -167,12 +159,11 @@ export default function DefMinuteur() {
               exit={{ opacity: 0 }}
               className="text-sm font-semibold text-[#4A5568] text-center mb-2 px-4"
             >
-              🎯 {task || "Focus total !"}
+              🎯 {task || t("minuteur.focus")}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Done celebration + Pause active */}
         <AnimatePresence>
           {phase === "done" && (
             <motion.div
@@ -184,27 +175,25 @@ export default function DefMinuteur() {
               <div className="text-center mb-3">
                 <div className="text-3xl mb-1">🎉⭐🏆</div>
                 <div className="font-display text-lg font-extrabold text-[#FF922B]">
-                  Super travail !
+                  {t("minuteur.doneTitle")}
                 </div>
                 <div className="text-xs text-[#9C6800] font-semibold mt-1">
-                  {rounds} session{rounds > 1 ? "s" : ""} terminée{rounds > 1 ? "s" : ""} · +3 étoiles !
+                  {rounds === 1 ? t("minuteur.doneSessions1", { n: rounds }) : t("minuteur.doneSessions", { n: rounds })}
                 </div>
               </div>
 
-              {/* Pause active — fondée sur la recherche */}
               <div className="bg-[#E8F7FF] rounded-2xl p-4 border border-[#7DC4E8]/30">
                 <div className="text-xs font-extrabold uppercase tracking-wider text-[#1A5F7A] mb-2">
-                  🔬 Pause active recommandée
+                  {t("minuteur.pauseTitle")}
                 </div>
                 <div className="text-xs text-[#4A5568] font-semibold mb-3">
-                  10 min de mouvement = 30 min de concentration en plus (Pontifex, 2013).
-                  Choisis une activité avant de relancer :
+                  {t("minuteur.pauseDesc")}
                 </div>
                 <div className="flex flex-col gap-2">
                   {[
-                    { href: "/explorateur/bouge", icon: "🤸", label: "Bouge & Compte", desc: "2 min de mouvement" },
-                    { href: "/explorateur/bulle", icon: "🧘", label: "Bulle de calme", desc: "Respiration 5-5" },
-                    { icon: "💧", label: "Boire de l'eau", desc: "Regarde par la fenêtre 2 min", href: null },
+                    { href: "/explorateur/bouge", icon: "🤸", label: t("minuteur.actBougeLabel"), desc: t("minuteur.actBougeDesc") },
+                    { href: "/explorateur/bulle", icon: "🧘", label: t("minuteur.actBulleLabel"), desc: t("minuteur.actBulleDesc") },
+                    { icon: "💧", label: t("minuteur.actWaterLabel"), desc: t("minuteur.actWaterDesc"), href: null },
                   ].map((a) =>
                     a.href ? (
                       <a key={a.label} href={a.href}
@@ -232,7 +221,6 @@ export default function DefMinuteur() {
           )}
         </AnimatePresence>
 
-        {/* Rounds counter */}
         {rounds > 0 && phase !== "done" && (
           <div className="flex gap-1 mb-3">
             {Array.from({ length: Math.min(rounds, 6) }).map((_, i) => (
@@ -242,18 +230,17 @@ export default function DefMinuteur() {
         )}
       </div>
 
-      {/* Buttons */}
       <div className="flex gap-3">
         {phase === "idle" || phase === "done" ? (
           <button onClick={start} className="btn-primary btn-mint flex-1 justify-center text-base">
-            {phase === "done" ? "🔄 Nouvelle session" : "▶ Démarrer le focus"}
+            {phase === "done" ? t("minuteur.newSession") : t("minuteur.startBtn")}
           </button>
         ) : (
           <>
             <button onClick={reset}
               className="flex-1 py-3 rounded-2xl border-2 border-gray-200 text-sm font-bold
                 text-[#7A8BA0] hover:bg-gray-50 transition-all">
-              ⏹ Arrêter
+              {t("minuteur.stopBtn")}
             </button>
           </>
         )}

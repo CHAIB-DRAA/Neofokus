@@ -4,13 +4,16 @@ import { Link } from "@/lib/navigation";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import IntrusEclair from "@/components/games/IntrusEclair";
+import { useTranslations } from "next-intl";
 
 export default function IntrusPage() {
+  const t = useTranslations("gamePages");
+  const tg = useTranslations("game");
   return (
     <div>
       <Link href="/explorateur" className="inline-flex items-center gap-2 text-sm font-bold
         text-[#7A8BA0] hover:text-[#1A5F7A] mb-4 transition-colors">
-        <ArrowLeft size={14} /> Retour
+        <ArrowLeft size={14} /> {tg("back_short")}
       </Link>
 
       <motion.div
@@ -23,14 +26,14 @@ export default function IntrusPage() {
           style={{ background: "linear-gradient(135deg, #3A9FD4, #5CC7A0)" }}>
           <span className="text-2xl">🔍</span>
           <div>
-            <h1 className="font-display text-lg font-extrabold text-white">Intrus Éclair</h1>
-            <p className="text-xs text-white/80 font-semibold">Attention sélective — Discrimination visuelle · 6-10 ans</p>
+            <h1 className="font-display text-lg font-extrabold text-white">Odd One Out</h1>
+            <p className="text-xs text-white/80 font-semibold">{t("intrus.subtitle")}</p>
           </div>
         </div>
 
         <div className="p-5">
           <div className="bg-[#BFE3F5] rounded-2xl p-4 mb-5 text-sm text-[#1A5F7A] font-semibold leading-relaxed">
-            👁️ Ce jeu entraîne ton <strong>attention sélective</strong> — la capacité à repérer rapidement ce qui est différent parmi un groupe !
+            👁️ {t("intrus.tip")}
           </div>
           <IntrusEclair />
         </div>
